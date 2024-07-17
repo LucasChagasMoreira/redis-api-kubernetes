@@ -1,28 +1,26 @@
-import redis.asyncio as redis
-import os
-import asyncio
+import redis
 from utils.pubsub_utils import get_module_logger
+import os
 
-
-async def main():
+def main():    
     redis_host = os.getenv("REDIS_HOST")
-    password = os.getenv("REDIS_PASSWORD")    
-    redis_client = await redis.from_url(f"redis://{redis_host}:6379", password=password)
+    redis_port = int(os.getenv("REDIS_PORT", 6379))  # A porta deve ser um inteiro
+
+    redis_client = redis.Redis(host=redis_host, port=redis_port)
     channel = 'Prediction'
 
     pubsub = redis_client.pubsub()
-    await pubsub.subscribe(channel)
+    pubsub.subscribe(channel)
 
     logger = get_module_logger()
 
     logger.info(f"Subscribed in {channel} Channel")
 
-    while True:
-        message = await pubsub.get_message(ignore_subscribe_messages=True)
-        if message is not None:
-            prediction = message["data"]
-            logger.info(f"{prediction}\n")    
+    for message in pubsub.listen():
+        if message['type'] == 'message':
+            prediction = message['data']
+            logger.info(f"{prediction}\n")
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

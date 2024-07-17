@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subscriber-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subscriber
+  template:
+    metadata:
+      labels:
+        app: subscriber
+    spec:
+      containers:
+      - image: pmoraisf/redis-api:subscribers
+        name: subscribers
+        env:
+        - name: REDIS_HOST
+          value: "35.239.233.36"
+        - name: REDIS_PORT
+          value: "6379"
+        ports:
+        - containerPort: 6379
+          name: http
