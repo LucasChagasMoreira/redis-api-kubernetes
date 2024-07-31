@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: subscriber-deploy
+  name: main-deploy
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: subscriber
+      app: main
   template:
     metadata:
       labels:
-        app: subscriber
+        app: main
     spec:
       containers:
-      - image: lucaschaga/subscriber:latest
-        name: subscribers
+      - image: lucaschaga/main:latest
+        name: main
         env:
         - name: REDIS_HOST
           value: "34.42.25.221"
